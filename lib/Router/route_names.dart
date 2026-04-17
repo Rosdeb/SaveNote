@@ -19,8 +19,7 @@ abstract class AppPath {
   static const splash     = '/splash_screen';
   static const login      = '/LoginScreen';
   static const register   = '/RegistrationScreen';
-
-  static const home       = '/home';
+  static const home       = '/HomeScreen';
   static const search     = '/search';
   static const profile    = '/profile';
   static const settings   = '/settings';

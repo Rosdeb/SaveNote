@@ -57,9 +57,11 @@ class TokenService {
   Future<void> removeUserId() async {
     await _prefs?.remove(_userIdKey);
   }
+
   Future<void> saveEmail(String email)async{
     await _prefs?.setString(_email, email);
   }
+
   String? getEmail() {
     return _prefs?.getString(_email);
   }
@@ -67,6 +69,7 @@ class TokenService {
   Future<void> clearAll() async {
     await _prefs?.clear();
   }
+
   Future<void> reloadTokens() async {
     _prefs = await SharedPreferences.getInstance();
   }

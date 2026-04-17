@@ -1,11 +1,13 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:notesave/Utils/Logger/logger.dart';
 import 'package:notesave/Utils/SuccessBar/successbar.dart';
 import 'package:notesave/Utils/floatingbar/floatingbar.dart';
 
+import '../../Router/route_names.dart';
 import '../../Utils/AppConstant/app_constant.dart';
 import '../../Utils/TokenServices/token_services.dart';
 import '../NetworkService/networkservice.dart';
@@ -49,7 +51,7 @@ class Authcontroller extends GetxController {
       final response = await http.post(
         Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'username': name, 'password': password}),
+        body: jsonEncode({'email': name, 'password': password}),
       );
 
       AppLogger.log('Status Code: ${response.statusCode}');
@@ -57,14 +59,19 @@ class Authcontroller extends GetxController {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
-        final token = data['token'];
-        await TokenService().saveToken(token);
+        final user = data['response']['data'];
+        final tokens = data['response']['tokens'];
+        final accessToken = tokens['access']['token'];
+        final refreshToken = tokens['refresh']['token'];
+        //final name = data['name']
+        await TokenService().saveToken(accessToken);
+        await TokenService().saveRefreshToken(refreshToken);
         AppLogger.log('Login success');
-        AppLogger.log('Token: $token');
+        AppLogger.log('Token: $accessToken');
         FloatingSuccessBar.show(context, message: 'Login successful! Welcome back 👋',);
 
         if (context.mounted) {
-          //Get.offAll(BottomMenuWrappers(), transition: Transition.cupertino);
+          context.goNamed(AppRouteName.home);
         }
         return;
       } else if (response.statusCode == 400) {
@@ -87,11 +94,14 @@ class Authcontroller extends GetxController {
 
 
   //---------> signupdate screen create <-----------//
-
+  final TextEditingController registernameController = TextEditingController();
+  final TextEditingController registerpasswordController = TextEditingController();
+  final TextEditingController registeremailController = TextEditingController();
 
   Future<void> registerUser({
     required BuildContext context,
     String? name,
+    String? email,
     String? password,
   }) async {
     final networkController = Get.find<NetworkController>();
@@ -111,7 +121,12 @@ class Authcontroller extends GetxController {
       final response = await http.post(
         Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'username': name, 'password': password}),
+        body: jsonEncode({
+          'username': name,
+          'email':email,
+          'password': password,
+
+        }),
       );
 
       AppLogger.log('Status Code: ${response.statusCode}');

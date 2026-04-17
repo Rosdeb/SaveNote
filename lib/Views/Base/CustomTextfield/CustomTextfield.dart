@@ -140,8 +140,8 @@ class _CustomTextFieldState extends State<CustomTextField> {
           borderSide: BorderSide(
             color: widget.borderColor ??
                 (isDark ? AppColors.DarkThemeText.withValues(alpha: 0.70)
-                    : AppColors.Green.withValues(alpha: 0.70)),
-            width: 0.8,
+                    : AppColors.blue500.withValues(alpha: 0.70)),
+            width: 1.2,
           ),
         ),
         errorBorder: OutlineInputBorder(
