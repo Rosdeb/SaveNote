@@ -63,7 +63,6 @@ flutter:
   assets:
     - assets/
     - assets/icons/
-    - assets/icons/icon/
     - assets/images/
     - assets/language/
     - .env
