@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:notesave/Router/app_router.dart';
 
-void main() {
+import 'Controller/NetworkService/networkservice.dart';
+
+void main()async {
+  Get.put(NetworkController(), permanent: true);
   runApp( MyApp());
 }
 

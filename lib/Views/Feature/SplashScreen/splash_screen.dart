@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:go_router/go_router.dart';
 import 'package:notesave/Utils/AppColor/app_colors.dart';
 import 'package:notesave/Utils/AppSpacing/app_spacing.dart';
 import 'package:notesave/Utils/Typography/app_typography.dart';
 import 'package:notesave/Views/Base/AppText/appText.dart';
 
+import '../../../Controller/NetworkService/networkservice.dart';
 import '../../../Router/route_names.dart';
 import '../../Base/CutomButton/Appbutton.dart';
 
@@ -17,9 +20,9 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>{
 
-
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       body: Padding(
@@ -27,6 +30,7 @@ class _SplashScreenState extends State<SplashScreen>{
         child: SafeArea(
           child: Column(
             children: [
+              //------ header image
               Image.asset("assets/images/note_save.png",),
               const SizedBox(height: AppSpacing.s16),
               const AppText("Welcome to Note Save",style: AppTypography.headlineH2, fontSize: 15,textAlign: TextAlign.center,),
@@ -34,7 +38,7 @@ class _SplashScreenState extends State<SplashScreen>{
               const AppText("Capture ideas, write freely,\nand never lose a thought again.", fontSize: 16,textAlign: TextAlign.center,),
 
               const Spacer(),
-
+              //------ buton
               SizedBox(
                 width: double.infinity,
                 height: 52,
@@ -72,7 +76,6 @@ class _SplashScreenState extends State<SplashScreen>{
                   ),
                 ],
               ),
-
 
             ],
           ),

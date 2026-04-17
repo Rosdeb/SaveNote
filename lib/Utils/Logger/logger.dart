@@ -1,4 +1,4 @@
-class Logger{
+class AppLogger{
   static void log(String message, {String type = "info"}) {
 
     const reset = '\x1B[0m';

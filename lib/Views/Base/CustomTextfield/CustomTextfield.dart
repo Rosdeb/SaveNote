@@ -132,11 +132,11 @@ class _CustomTextFieldState extends State<CustomTextField> {
         ):_buildIcon(widget.suffixIcon, color: suffixColor),
 
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(
             color: widget.borderColor ??
                 (isDark ? AppColors.DarkThemeText.withValues(alpha: 0.70)
@@ -145,14 +145,14 @@ class _CustomTextFieldState extends State<CustomTextField> {
           ),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(
               color: isDark ? AppColors.Red.withValues(alpha: 0.30)
                   : AppColors.Red
           ),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(
             color: isDark ? AppColors.Red.withValues(alpha: 0.30)
                 : AppColors.Red,
