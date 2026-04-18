@@ -17,14 +17,14 @@ class SplashController extends GetxController {
       statusText.value = 'Checking your session...';
 
       await _tokenService.reloadTokens();
-      await Future.delayed(const Duration(milliseconds: 1000));
+      await Future.delayed(const Duration(milliseconds: 600));
 
       final hasAccessToken = (_tokenService.getToken() ?? '').isNotEmpty;
       final hasRefreshToken = await _tokenService.hasRefreshToken();
 
       if (!hasAccessToken && !hasRefreshToken) {
         AppLogger.log('No session found. Routing to login.', type: 'info');
-        return AppRouteName.login;
+        return AppRouteName.splash;
       }
 
       statusText.value = 'Restoring your account...';

@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:notesave/Router/route_names.dart';
 import 'package:notesave/Views/Feature/Auth/LoginScreen/LoginScreen.dart';
 import 'package:notesave/Views/Feature/Auth/Registration/RegistrationScreen.dart';
+import 'package:notesave/Views/Feature/Auth/VerifyScreen/verifyscreen.dart';
 import 'package:notesave/Views/Feature/ErrorPage/errorpage.dart';
 import 'package:notesave/Views/Feature/HomeScreen/CreateNoteScreen/createnoteScreen.dart';
 import 'package:notesave/Views/Feature/HomeScreen/EditScreen/editScreen.dart';
@@ -77,6 +78,18 @@ class MyAppRouter {
           final index = args['index'] as int;
           return MaterialPage(
             child: EditNoteScreen(note: note, index: index),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppPath.verifyscreen,
+        name: AppRouteName.verifyscreen,
+        pageBuilder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          final email = args['email'] as String;
+          return MaterialPage(
+            child: VerifyScreen(email: email)
           );
         },
       ),

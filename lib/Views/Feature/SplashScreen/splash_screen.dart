@@ -71,15 +71,14 @@ import '../../../Router/route_names.dart';
                 const Spacer(),
 
                 //------ buton
-                Obx(()=>GradientButton(
+                GradientButton(
                   text: "Get started",
-                  isLoading: controller.isLoading.value,
+                  //isLoading: controller.isLoading.value,
                   height: isTablet ? 65 :52,
                   onTap: () async {
                     HapticFeedback.lightImpact();
                     context.goNamed(AppRouteName.register);
                   },
-                ),
                 ),
 
                 const SizedBox(height: AppSpacing.s16),

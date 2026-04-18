@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -108,10 +109,15 @@ class Authcontroller extends GetxController {
   }
 
   //---------> signupdate screen create <-----------//
-  final TextEditingController registernameController = TextEditingController();
-  final TextEditingController registerpasswordController =
-      TextEditingController();
+  final TextEditingController registerNamecontroller = TextEditingController();
+  final TextEditingController registerLastnameController = TextEditingController();
+  final TextEditingController registerpasswordController = TextEditingController();
   final TextEditingController registeremailController = TextEditingController();
+
+  bool isValidPassword(String password) {
+    final regex = RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$');
+    return regex.hasMatch(password);
+  }
 
   Future<void> registerUser({
     required BuildContext context,
@@ -124,25 +130,31 @@ class Authcontroller extends GetxController {
     if (!networkController.isOnline.value) {
       throw Exception('No internet connection');
     }
+    final url = '${AppConstants.BASE_URL}/auth/register';
 
-    final url = '${AppConstants.BASE_URL}/auth/login';
+    if (password == null || password.isEmpty) {
+      FloatingErrorBar.show(context, message: "Password required");
+      return;
+    }
 
-    if (!accepted.value) {
+    if (!isValidPassword(password)) {
       FloatingErrorBar.show(
         context,
-        message: 'You must accept the terms & conditions ⚠️',
+        message: "Password must contain 8 characters, 1 letter and 1 number",
       );
       return;
     }
+
     try {
       isLoading.value = true;
       final response = await http.post(
         Uri.parse(url),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
-          'username': name,
-          'email': email,
-          'password': password,
+          "name": name,
+          "email": email,
+          "password": password,
+          "role": "user"
         }),
       );
 
@@ -151,17 +163,12 @@ class Authcontroller extends GetxController {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         final data = jsonDecode(response.body);
-        final token = data['token'];
-        await TokenService().saveToken(token);
-        AppLogger.log('Login success');
-        AppLogger.log('Token: $token');
-        FloatingSuccessBar.show(
-          context,
-          message: 'Login successful! Welcome back 👋',
-        );
+        FloatingSuccessBar.show(context, message: 'Please verify your email?',);
 
         if (context.mounted) {
-          //Get.offAll(BottomMenuWrappers(), transition: Transition.cupertino);
+          context.goNamed(AppRouteName.verifyscreen,extra: {
+            'email': email,
+          });
         }
         return;
       } else if (response.statusCode == 400) {
@@ -170,6 +177,9 @@ class Authcontroller extends GetxController {
         return;
       } else {
         isLoading.value = false;
+        final data = jsonDecode(response.body);
+        String message = data['message'] ?? "Registration failed";
+        FloatingErrorBar.show(context, message: message,);
         AppLogger.log('Server error');
         return;
       }
@@ -181,4 +191,117 @@ class Authcontroller extends GetxController {
       isLoading.value = false;
     }
   }
+
+  // --- verify screee
+
+  var start = 60.obs;
+  Timer? timer;
+  final RxBool verifyLoading = false.obs;
+
+  void startTimer() {
+    start.value = 120;
+    timer?.cancel();
+    timer = Timer.periodic(const Duration(seconds: 1), (t) {
+      if (start.value <= 0) {
+        t.cancel();
+      } else {
+        start.value--;
+      }
+    });
+  }
+
+
+
+
+  Future<bool> verifyUser(BuildContext context,String email, String code) async {
+    final networkController = Get.find<NetworkController>();
+
+    if (!networkController.isOnline.value) {
+      FloatingSuccessBar.show(context, message: 'No internet connection',);
+      throw Exception('No internet connection');
+    }
+
+
+    final url = "${AppConstants.BASE_URL}/auth/verify-account";
+    final body = {
+      'email': email,
+      'code': code,
+    };
+
+    verifyLoading.value = true;
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        FloatingSuccessBar.show(context, message: 'Successfully verify email?',);
+        if(context.mounted){
+          context.goNamed(AppRouteName.login);
+        }
+        return true;
+      } else {
+        String message = "Code wrong";
+        try {
+          final body = jsonDecode(response.body);
+          message = body['message'] ?? message;
+          AppLogger.log(message);
+        } catch (_) {}
+        return false;
+      }
+    } catch (e) {
+      return false;
+    } finally {
+      verifyLoading.value = false;
+    }
+  }
+
+
+  Future<bool> resendCode(BuildContext context,String email,) async {
+    final networkController = Get.find<NetworkController>();
+
+    if (!networkController.isOnline.value) {
+      FloatingErrorBar.show(context, message: 'No internet connection',);
+      throw Exception('No internet connection');
+    }
+
+
+    final url = "${AppConstants.BASE_URL}/auth/resend-otp";
+    final body = {
+      'email': email,
+    };
+
+    verifyLoading.value = true;
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(body),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final data = jsonDecode(response.body);
+        FloatingSuccessBar.show(context, message: 'Resend Otp send successfully',);
+        startTimer();
+        return true;
+      } else {
+        String message = "Code wrong";
+        try {
+          final body = jsonDecode(response.body);
+          message = body['message'] ?? message;
+          print(body);
+        } catch (_) {}
+        return false;
+      }
+    } catch (e) {
+      return false;
+    } finally {
+      verifyLoading.value = false;
+    }
+  }
+
+
 }

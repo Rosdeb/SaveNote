@@ -25,6 +25,7 @@ class Homecontroller extends GetxController {
   final RxString image = ''.obs;
   RxString deletingId = ''.obs;
   final RxBool isLoadingProfile = false.obs;
+  final RxBool isLoadingNote = false.obs;
   final RxBool isUploadingImage = false.obs;
   final RxBool isLoggingOut = false.obs;
   final RxBool isLogginNoteCreate = false.obs;
@@ -79,6 +80,7 @@ class Homecontroller extends GetxController {
   Future<void> fetchNotes() async {
     try {
       isLoadingProfile.value = true;
+      isLoadingNote.value = true;
 
       final response = await _apiService.get(
         endpoint: '/notes/all',
@@ -94,6 +96,7 @@ class Homecontroller extends GetxController {
       AppLogger.log('Load profile error: $e');
     } finally {
       isLoadingProfile.value = false;
+      isLoadingNote.value = false;
     }
   }
 

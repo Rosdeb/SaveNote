@@ -28,9 +28,7 @@ class Registrationscreen extends StatefulWidget {
 }
 
 class _RegistrationscreenState extends State<Registrationscreen> {
-
-  final Authcontroller _signInController = Get.put(Authcontroller());
-
+  final Authcontroller controller = Get.put(Authcontroller());
 
   @override
   Widget build(BuildContext context) {
@@ -60,7 +58,27 @@ class _RegistrationscreenState extends State<Registrationscreen> {
                   SizedBox(height: screenHeight * 0.05),
                   _buildEmailPasswordFields(),
                   SizedBox(height: screenHeight * 0.2),
-                  _buildLoginButton(isTablet),
+                  Obx(
+                    () => GradientButton(
+                      text: "Sign Up",
+                      height: isTablet ? 65 : 52,
+                      isLoading: controller.isLoading.value,
+                      onTap: () async {
+                        HapticFeedback.lightImpact();
+                        if (controller.registerNamecontroller.text.trim().isEmpty || controller.registeremailController.text.trim().isEmpty || controller.registerpasswordController.text.trim().isEmpty) {
+                          FloatingErrorBar.show(context,message: "Please enter your name and password");
+                          return;
+                        }
+                        await controller.registerUser(
+                          context: context,
+                          name: controller.registerNamecontroller.text.toString(),
+                          email: controller.registeremailController.text.toString(),
+                          password: controller.registerpasswordController.text.toString(),
+                        );
+                      },
+                    ),
+                  ),
+
                   SizedBox(height: screenHeight * 0.03),
                   OrDivider(
                     text: "OR Log in with",
@@ -70,23 +88,23 @@ class _RegistrationscreenState extends State<Registrationscreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Obx(() => SocialButton(
-                        isLoading: _signInController.googleLoading.value,
-                        icon: AppIcons.google,
-                        onTap:(){
-
-                        },
-                        isTablet: isTablet,
-                      )),
+                      Obx(
+                        () => SocialButton(
+                          isLoading: controller.googleLoading.value,
+                          icon: AppIcons.google,
+                          onTap: () {},
+                          isTablet: isTablet,
+                        ),
+                      ),
                       SizedBox(width: isTablet ? 24 : 16),
-                      Obx(() => SocialButton(
-                        isLoading: _signInController.appleLoading.value,
-                        icon: AppIcons.apple,
-                        onTap: (){
-
-                        },
-                        isTablet: isTablet,
-                      )),
+                      Obx(
+                        () => SocialButton(
+                          isLoading: controller.appleLoading.value,
+                          icon: AppIcons.apple,
+                          onTap: () {},
+                          isTablet: isTablet,
+                        ),
+                      ),
                     ],
                   ),
 
@@ -98,24 +116,23 @@ class _RegistrationscreenState extends State<Registrationscreen> {
           ),
         ),
       ),
-
     );
   }
-
 
   Widget _buildEmailPasswordFields() {
     return Column(
       children: [
         CustomTextField(
-          controller: _signInController.nameController,
-          hintText: "Enter name",
-          prefixIcon: AppIcons.mailbox,
+          controller: controller.registerNamecontroller,
+          hintText: "Enter your name",
+          //prefixIcon: AppIcons.mailbox,
           prefixIconColor: AppColors.blue400,
           filColor: Colors.grey.withValues(alpha: 0.15),
         ),
+
         const SizedBox(height: AppSpacing.s16),
         CustomTextField(
-          controller: _signInController.registeremailController,
+          controller: controller.registeremailController,
           hintText: "Enter Email",
           prefixIcon: AppIcons.mailbox,
           prefixIconColor: AppColors.blue400,
@@ -126,7 +143,7 @@ class _RegistrationscreenState extends State<Registrationscreen> {
 
         CustomTextField(
           prefixIconColor: AppColors.blue400,
-          controller: _signInController.passwordController,
+          controller: controller.registerpasswordController,
           hintText: "Enter password",
           isPassword: true,
           prefixIcon: AppIcons.lock,
@@ -135,30 +152,6 @@ class _RegistrationscreenState extends State<Registrationscreen> {
       ],
     );
   }
-
-  // ==================== Login Button ====================
-  Widget _buildLoginButton(bool isTablate) {
-    return Obx(() => GradientButton(
-      text: "Sign Up",
-      height: isTablate ? 65 :52,
-      isLoading: _signInController.isLoading.value,
-      onTap: () async {
-        HapticFeedback.lightImpact();
-        if (_signInController.nameController.text.trim().isEmpty || _signInController.passwordController.text.trim().isEmpty) {
-          FloatingErrorBar.show(context, message: "Please enter your name and password");
-          return;
-        }
-        await _signInController.loginUser(
-          context: context,
-          name: _signInController.nameController.text.toString(),
-          password: _signInController.passwordController.text.toString(),
-        );
-      },
-    ),
-    );
-  }
-
-
 
   // ==================== Sign Up ====================
   Widget _buildSignUpPrompt(BuildContext context, bool isDark, bool isTablet) {
@@ -172,7 +165,7 @@ class _RegistrationscreenState extends State<Registrationscreen> {
           fontWeight: FontWeight.w500,
         ),
         IosTapEffect(
-          onTap: (){
+          onTap: () {
             context.goNamed(AppRouteName.login);
           },
           child: IntrinsicWidth(
@@ -186,7 +179,8 @@ class _RegistrationscreenState extends State<Registrationscreen> {
                 ),
                 Container(
                   height: 1,
-                  color: Theme.of(context).textTheme.titleLarge?.color ??
+                  color:
+                      Theme.of(context).textTheme.titleLarge?.color ??
                       Colors.black,
                 ),
               ],
@@ -199,20 +193,22 @@ class _RegistrationscreenState extends State<Registrationscreen> {
 
   // ==================== Header Section ====================
   Widget _buildHeader(
-      BuildContext context,
-      bool isDark,
-      double screenHeight,
-      bool isTablet,
-      ) {
+    BuildContext context,
+    bool isDark,
+    double screenHeight,
+    bool isTablet,
+  ) {
     return Column(
       children: [
-        AppText("Create your account",
+        AppText(
+          "Create your account",
           fontSize: isTablet ? 35 : 28,
           color: isDark ? AppColors.DarkThemeText : AppColors.Black,
           fontWeight: FontWeight.bold,
         ),
         SizedBox(height: screenHeight * 0.02),
-        AppText("Join us today and start saving your thoughts,\n ideas,and important notes in one secure\nand easy-to-use place.",
+        AppText(
+          "Join us today and start saving your thoughts,\n ideas,and important notes in one secure\nand easy-to-use place.",
           fontSize: isTablet ? 18 : 16,
           color: Theme.of(context).textTheme.bodyLarge?.color,
           fontWeight: FontWeight.w500,
