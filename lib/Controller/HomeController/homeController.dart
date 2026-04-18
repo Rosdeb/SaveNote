@@ -44,7 +44,7 @@ class HomeController extends GetxController {
   final RxBool isLoggingOut = false.obs;
   final RxBool isSavingNote = false.obs;
   final RxBool isDeletingNote = false.obs;
-
+  bool _paginationTriggered = false;
   // ─── Pagination ────────────────────────────────────────────────────────────
 
   final RxInt _currentPage = 1.obs;
@@ -58,14 +58,6 @@ class HomeController extends GetxController {
   // ─── Lifecycle ─────────────────────────────────────────────────────────────
 
   @override
-  void onInit() {
-    super.onInit();
-    fetchNotes();
-    loadUserData();
-    _attachScrollListener();
-  }
-
-  @override
   void onClose() {
     scrollController.dispose();
     super.onClose();
@@ -73,19 +65,18 @@ class HomeController extends GetxController {
 
   // ─── Scroll Listener ───────────────────────────────────────────────────────
 
-  void _attachScrollListener() {
+  void attachScrollListener() {
+
     scrollController.addListener(() {
-      final position = scrollController.position;
-      final nearBottom = position.pixels >= position.maxScrollExtent - 200;
-      if (nearBottom && !isLoadingMoreNotes.value && hasMoreNotes.value) {
-        fetchNotes(loadMore: true);
+      final nearBottom = scrollController.position.pixels >= scrollController.position.maxScrollExtent - 200;
+      if (nearBottom && !_paginationTriggered && !isLoadingMoreNotes.value && hasMoreNotes.value) {
+        _paginationTriggered = true;
+        fetchNotes(loadMore: true).then((_) => _paginationTriggered = false);
       }
     });
   }
 
-  // ─── Fetch Notes ───────────────────────────────────────────────────────────
 
-  /// Loads notes from the API. Pass [loadMore] = true to append the next page.
   Future<void> fetchNotes({bool loadMore = false}) async {
     if (loadMore) {
       if (!hasMoreNotes.value || isLoadingMoreNotes.value) return;
@@ -108,6 +99,7 @@ class HomeController extends GetxController {
       if (response == null) return;
 
       final data = NotesResponse.fromJson(response);
+      notesList.clear();
       notesList.addAll(data.data.docs);
       hasMoreNotes.value = _currentPage.value < data.data.totalPages;
     } catch (e, stackTrace) {
@@ -118,9 +110,8 @@ class HomeController extends GetxController {
     }
   }
 
-  // ─── Load User Profile ─────────────────────────────────────────────────────
 
-  /// Populates user data from cache immediately, then refreshes from the API.
+
   Future<void> loadUserData({bool refresh = true}) async {
     _applyCachedProfile();
     if (!refresh) return;
@@ -170,7 +161,6 @@ class HomeController extends GetxController {
   }
 
   // ─── Create Note ───────────────────────────────────────────────────────────
-
   Future<void> createNote(
       BuildContext context, {
         required String title,
@@ -204,7 +194,6 @@ class HomeController extends GetxController {
   }
 
   // ─── Edit Note ─────────────────────────────────────────────────────────────
-
   Future<void> editNote(
       BuildContext context, {
         required String id,
@@ -241,7 +230,6 @@ class HomeController extends GetxController {
   }
 
   // ─── Delete Note ───────────────────────────────────────────────────────────
-
   Future<void> deleteNote(
       BuildContext context, {
         required String id,
@@ -289,10 +277,6 @@ class HomeController extends GetxController {
     return result ?? false;
   }
 
-  // ─── Avatar Upload ─────────────────────────────────────────────────────────
-
-  /// Opens the gallery, validates the file type, then uploads.
-  /// Returns `null` if cancelled, `false` on invalid type, `true/false` on upload result.
   Future<bool?> pickAndUploadAvatar() async {
     final XFile? picked = await _imagePicker.pickImage(
       source: ImageSource.gallery,
@@ -304,12 +288,10 @@ class HomeController extends GetxController {
     final file = File(picked.path);
     final ext = path.extension(file.path).toLowerCase();
     const allowedExtensions = ['.jpg', '.jpeg', '.png', '.webp'];
-
     if (!allowedExtensions.contains(ext)) {
       AppLogger.log('Unsupported avatar file type: $ext', type: 'warning');
       return false;
     }
-
     return _uploadAvatar(file);
   }
 
@@ -345,7 +327,6 @@ class HomeController extends GetxController {
   }
 
   // ─── Logout ────────────────────────────────────────────────────────────────
-
   Future<bool> logout() async {
     isLoggingOut.value = true;
     try {
@@ -360,7 +341,6 @@ class HomeController extends GetxController {
   }
 
   // ─── Private Helpers ───────────────────────────────────────────────────────
-
   Map<String, dynamic>? _extractUserFromResponse(dynamic response) {
     if (response is! Map<String, dynamic>) return null;
 
@@ -380,15 +360,10 @@ class HomeController extends GetxController {
     final resolvedEmail =
         _sanitize(user['email']) ?? _sanitize(_tokenService.getEmail());
     final resolvedName =
-        _sanitize(user['name']) ??
-            _sanitize(user['username']) ??
-            _sanitize(user['fullName']) ??
+        _sanitize(user['name']) ?? _sanitize(user['username']) ?? _sanitize(user['fullName']) ??
             (resolvedEmail != null ? _nameFromEmail(resolvedEmail) : null);
     final resolvedAvatar =
-        _sanitize(user['avatar']) ??
-            _sanitize(user['image']) ??
-            _sanitize(user['profileImage']) ??
-            '';
+        _sanitize(user['avatar']) ?? _sanitize(user['image']) ?? _sanitize(user['profileImage']) ?? '';
     final resolvedId =
         _sanitize(user['id']) ?? _sanitize(user['_id']) ?? '';
 

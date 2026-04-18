@@ -68,8 +68,8 @@ class AppDrawer extends StatelessWidget {
                             height: 14,
                             width: 14,
                             child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
+                              strokeWidth: 1,
+                              color: Colors.greenAccent,
                             ),
                           )
                               : const Icon(
