@@ -60,8 +60,7 @@ class GradientButton extends StatelessWidget {
 
 
             ///----===--- Arrow Icon ---====---//
-            isLoading
-                ? const SizedBox(width: 42)
+            isLoading ? const SizedBox(width: 42)
                 :Padding(
               padding: const EdgeInsets.all(4.0),
               child: CircleAvatar(

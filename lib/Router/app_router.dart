@@ -9,7 +9,6 @@ import 'package:notesave/Views/Feature/HomeScreen/CreateNoteScreen/createnoteScr
 import 'package:notesave/Views/Feature/HomeScreen/EditScreen/editScreen.dart';
 import 'package:notesave/Views/Feature/HomeScreen/NoteDetailScreen/notedetailScreen.dart';
 import 'package:notesave/Views/Feature/SplashScreen/splash_screen.dart';
-
 import '../Models/Note/noteitem.dart';
 import '../Views/Feature/HomeScreen/HomeScreen.dart';
 

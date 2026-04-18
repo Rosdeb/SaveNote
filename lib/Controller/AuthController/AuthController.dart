@@ -7,23 +7,35 @@ import 'package:http/http.dart' as http;
 import 'package:notesave/Utils/Logger/logger.dart';
 import 'package:notesave/Utils/SuccessBar/successbar.dart';
 import 'package:notesave/Utils/floatingbar/floatingbar.dart';
-
 import '../../Router/route_names.dart';
 import '../../Utils/AppConstant/app_constant.dart';
 import '../../Utils/TokenServices/token_services.dart';
 import '../NetworkService/networkservice.dart';
 
-/// Controller for sign-in functionality.
-class Authcontroller extends GetxController {
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController countryCodeController = TextEditingController();
 
-  final RxInt selectedIndex = 0.obs;
+class Authcontroller extends GetxController {
+
+  /// bool values
   final RxBool isLoading = false.obs;
   final RxBool accepted = false.obs;
   final RxBool googleLoading = false.obs;
   final RxBool appleLoading = false.obs;
+
+
+  ///------ use login TextEditingController controller
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController countryCodeController = TextEditingController();
+
+
+  //---------> signupdate screen create <-----------//
+  final TextEditingController registerNamecontroller = TextEditingController();
+  final TextEditingController registerLastnameController = TextEditingController();
+  final TextEditingController registerpasswordController = TextEditingController();
+  final TextEditingController registeremailController = TextEditingController();
+
+  final RxInt selectedIndex = 0.obs;
+
 
   void toggleAccepted(bool? value) {
     accepted.value = value ?? false;
@@ -72,19 +84,12 @@ class Authcontroller extends GetxController {
         await TokenService().saveRefreshToken(refreshToken);
         await TokenService().saveUserId('${user['id'] ?? user['_id'] ?? ''}');
         await TokenService().saveEmail('${user['email'] ?? name ?? ''}');
-        await TokenService().saveName(
-          '${user['name'] ?? user['username'] ?? user['fullName'] ?? ''}',
-        );
-        await TokenService().saveAvatar(
-          '${user['avatar'] ?? user['image'] ?? user['profileImage'] ?? ''}',
-        );
+        await TokenService().saveName('${user['name'] ?? user['username'] ?? user['fullName'] ?? ''}',);
+        await TokenService().saveAvatar('${user['avatar'] ?? user['image'] ?? user['profileImage'] ?? ''}',);
 
         AppLogger.log('Login success');
         AppLogger.log('Token: $accessToken');
-        FloatingSuccessBar.show(
-          context,
-          message: 'Login successful! Welcome back 👋',
-        );
+        FloatingSuccessBar.show(context, message: 'Login successful! Welcome back 👋',);
 
         if (context.mounted) {
           context.goNamed(AppRouteName.home);
@@ -108,11 +113,7 @@ class Authcontroller extends GetxController {
     }
   }
 
-  //---------> signupdate screen create <-----------//
-  final TextEditingController registerNamecontroller = TextEditingController();
-  final TextEditingController registerLastnameController = TextEditingController();
-  final TextEditingController registerpasswordController = TextEditingController();
-  final TextEditingController registeremailController = TextEditingController();
+
 
   bool isValidPassword(String password) {
     final regex = RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$');
@@ -162,9 +163,7 @@ class Authcontroller extends GetxController {
       AppLogger.log('Response Body: ${response.body}');
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = jsonDecode(response.body);
         FloatingSuccessBar.show(context, message: 'Please verify your email?',);
-
         if (context.mounted) {
           context.goNamed(AppRouteName.verifyscreen,extra: {
             'email': email,
@@ -192,8 +191,7 @@ class Authcontroller extends GetxController {
     }
   }
 
-  // --- verify screee
-
+  //=====>  verify screen controller codebase ======> //
   var start = 60.obs;
   Timer? timer;
   final RxBool verifyLoading = false.obs;
@@ -209,9 +207,6 @@ class Authcontroller extends GetxController {
       }
     });
   }
-
-
-
 
   Future<bool> verifyUser(BuildContext context,String email, String code) async {
     final networkController = Get.find<NetworkController>();
@@ -259,7 +254,6 @@ class Authcontroller extends GetxController {
     }
   }
 
-
   Future<bool> resendCode(BuildContext context,String email,) async {
     final networkController = Get.find<NetworkController>();
 
@@ -283,7 +277,6 @@ class Authcontroller extends GetxController {
       );
 
       if (response.statusCode == 200 || response.statusCode == 201) {
-        final data = jsonDecode(response.body);
         FloatingSuccessBar.show(context, message: 'Resend Otp send successfully',);
         startTimer();
         return true;

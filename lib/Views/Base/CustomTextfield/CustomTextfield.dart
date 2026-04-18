@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-
 import '../../../Utils/AppColor/app_colors.dart';
 import '../../../Utils/AppIcon/app_icon.dart';
 
@@ -9,8 +8,8 @@ class CustomTextField extends StatefulWidget {
   final TextInputType? keyboardType;
   final Color? borderColor;
   final Color? filColor;
-  final dynamic prefixIcon; // Widget or String (SVG path)
-  final dynamic suffixIcon; // Widget or String (SVG path)
+  final dynamic prefixIcon;
+  final dynamic suffixIcon;
   final Color? prefixIconColor;
   final Color? suffixIconColor;
   final String? labelText;
@@ -147,15 +146,13 @@ class _CustomTextFieldState extends State<CustomTextField> {
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(
-              color: isDark ? AppColors.Red.withValues(alpha: 0.30)
-                  : AppColors.Red
+              color: isDark ? AppColors.Red.withValues(alpha: 0.30) : AppColors.Red
           ),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(
-            color: isDark ? AppColors.Red.withValues(alpha: 0.30)
-                : AppColors.Red,
+            color: isDark ? AppColors.Red.withValues(alpha: 0.30) : AppColors.Red,
             width: 1.1,
           ),
         ),

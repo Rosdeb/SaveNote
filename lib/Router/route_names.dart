@@ -7,16 +7,8 @@ abstract class AppRouteName {
   static const createnoteScreen = 'createnoteScreen';
   static const editScreen  = '/editScreen';
   static const verifyscreen  = '/verifyscreen';
-
-  // Shell (bottom-nav tabs)
   static const home     = 'home';
-  static const search   = 'search';
-  static const profile  = 'profile';
-  static const settings = 'settings';
 
-  // Detail screens
-  static const itemDetail = 'item-detail';
-  static const userDetail = 'user-detail';
 }
 
 abstract class AppPath {
@@ -28,7 +20,5 @@ abstract class AppPath {
   static const createnoteScreen  = '/createnoteScreen';
   static const editScreen  = '/editScreen';
   static const verifyscreen  = '/verifyscreen';
-  static const profile    = '/profile';
-  static const settings   = '/settings';
 
 }

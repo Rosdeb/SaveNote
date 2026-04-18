@@ -10,8 +10,7 @@ class NetworkController extends GetxController {
   late StreamSubscription _subscription;
   RxBool isOnline = true.obs;
 
-  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey =
-      GlobalKey<ScaffoldMessengerState>();
+  final GlobalKey<ScaffoldMessengerState> scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 
   @override
   void onInit() {
