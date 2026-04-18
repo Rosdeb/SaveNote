@@ -564,6 +564,106 @@ class ApiService {
     }
   }
 
+  Future<Map<String, dynamic>?> patch({
+    required String endpoint,
+    dynamic body,
+    Map<String, String>? headers,
+    bool requiresAuth = true,
+  }) async {
+    await _tokenService.init(); // Ensure token service is initialized
+    final networkController = Get.find<NetworkController>();
+
+    if (!networkController.isOnline.value) {
+      throw Exception('No internet connection');
+    }
+
+    String url = '${AppConstants.BASE_URL}$endpoint';
+
+    try {
+      Map<String, String> requestHeaders = {};
+      if (requiresAuth) {
+        String? token = await _tokenService.getToken();
+        if (token == null || token.isEmpty) {
+          throw Exception('No access token available');
+        }
+        requestHeaders['Authorization'] = 'Bearer $token';
+      }
+
+      if (headers != null) {
+        requestHeaders.addAll(headers);
+      }
+
+      requestHeaders['Content-Type'] = 'application/json';
+
+      String bodyString = body != null ? (body is String ? body : json.encode(body)) : '';
+
+      AppLogger.log('Making PATCH request to: $url', type: 'info');
+      AppLogger.log('PATCH Request Body: $bodyString', type: 'info');
+
+      final response = await http.patch(
+        Uri.parse(url),
+        headers: requestHeaders,
+        body: bodyString,
+      );
+
+      AppLogger.log('PATCH Response Status: ${response.statusCode}', type: 'info');
+      AppLogger.log('PATCH Response Body: ${response.body}', type: 'info');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final decoded = json.decode(response.body);
+        return decoded is Map<String, dynamic> ? decoded : {'data': decoded};
+      } else if (response.statusCode == 401) {
+        bool refreshed = await _handleTokenRefresh();
+        if (refreshed) {
+          Map<String, String> retryHeaders = {};
+          if (requiresAuth) {
+            String? newToken = await _tokenService.getToken();
+            if (newToken != null && newToken.isNotEmpty) {
+              retryHeaders['Authorization'] = 'Bearer $newToken';
+            }
+          }
+
+          if (headers != null) {
+            retryHeaders.addAll(headers);
+          }
+          retryHeaders['Content-Type'] = 'application/json';
+
+          final retryResponse = await http.patch(
+            Uri.parse(url),
+            headers: retryHeaders,
+            body: bodyString,
+          );
+
+          AppLogger.log('Retry PATCH Response Status: ${retryResponse.statusCode}', type: 'info');
+
+          if (retryResponse.statusCode == 200) {
+            final decoded = json.decode(retryResponse.body);
+            return decoded is Map<String, dynamic> ? decoded : {'data': decoded};
+          } else {
+            _handleErrorResponse(retryResponse.statusCode, response.body);
+            return null;
+          }
+        } else {
+          await _handleUnauthorized();
+          _handleErrorResponse(response.statusCode, response.body);
+          return null;
+        }
+      } else {
+        _handleErrorResponse(response.statusCode, response.body);
+        return null;
+      }
+    } on SocketException {
+      AppLogger.log('Socket exception (no internet connection)', type: 'error');
+      throw Exception('No internet connection');
+    } on HttpException {
+      AppLogger.log('HTTP exception occurred', type: 'error');
+      throw Exception('HTTP error occurred');
+    } catch (e) {
+      AppLogger.log('Error making PATCH request: $e', type: 'error');
+      throw Exception('Network error: $e');
+    }
+  }
+
   Future<Map<String, dynamic>?> patchWithMultipart({
     required String endpoint,
     Map<String, String>? fields,

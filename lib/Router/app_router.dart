@@ -4,8 +4,12 @@ import 'package:notesave/Router/route_names.dart';
 import 'package:notesave/Views/Feature/Auth/LoginScreen/LoginScreen.dart';
 import 'package:notesave/Views/Feature/Auth/Registration/RegistrationScreen.dart';
 import 'package:notesave/Views/Feature/ErrorPage/errorpage.dart';
+import 'package:notesave/Views/Feature/HomeScreen/CreateNoteScreen/createnoteScreen.dart';
+import 'package:notesave/Views/Feature/HomeScreen/EditScreen/editScreen.dart';
+import 'package:notesave/Views/Feature/HomeScreen/NoteDetailScreen/notedetailScreen.dart';
 import 'package:notesave/Views/Feature/SplashScreen/splash_screen.dart';
 
+import '../Models/Note/noteitem.dart';
 import '../Views/Feature/HomeScreen/HomeScreen.dart';
 
 // lib/Router/app_router.dart
@@ -42,6 +46,42 @@ class MyAppRouter {
         pageBuilder: (context, state) =>
             MaterialPage(child: Registrationscreen()),
       ),
+      GoRoute(
+        path: AppPath.notedetails,
+        name: AppRouteName.notedetails,
+        pageBuilder: (context, state) {
+          final data = state.extra as Map<String, dynamic>;
+          return MaterialPage(
+            child: NoteDetailsScreen(
+              id: data['id'],
+              title: data['title'],
+              description: data['description'],
+            ),
+          );
+        },
+      ),
+
+      GoRoute(
+        path: AppPath.createnoteScreen,
+        name: AppRouteName.createnoteScreen,
+        pageBuilder: (context, state) =>
+            MaterialPage(child: CreateNoteScreen()),
+      ),
+
+      GoRoute(
+        path: AppPath.editScreen,
+        name: AppRouteName.editScreen,
+        pageBuilder: (context, state) {
+          final args = state.extra as Map<String, dynamic>;
+          final note = args['note'] as NoteModel;
+          final index = args['index'] as int;
+          return MaterialPage(
+            child: EditNoteScreen(note: note, index: index),
+          );
+        },
+      ),
+
+
     ],
     errorPageBuilder: (context, state) =>
         MaterialPage(child: ErrorPage()),
