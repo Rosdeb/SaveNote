@@ -121,6 +121,13 @@ flutter pub get
 flutter run
 ```
 
+## Demo Credentials
+
+Use this test account for login:
+
+- Email: `ros13@yopmail.com`
+- Password: `1qazxsw2`
+Or if you want create a user:
 ## Configuration Notes
 
 - The repository includes a `.env` file and declares it in `pubspec.yaml`.
