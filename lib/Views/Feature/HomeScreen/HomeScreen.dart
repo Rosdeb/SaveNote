@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:notesave/Router/route_names.dart';
 import 'package:notesave/Utils/AppColor/app_colors.dart';
+import 'package:notesave/Utils/AppSpacing/app_spacing.dart';
 import 'package:notesave/Views/Base/AppText/appText.dart';
 import '../../../Controller/HomeController/homeController.dart';
 import '../../../Models/Note/noteitem.dart';
@@ -19,8 +20,8 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-
+class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateMixin {
+  late final AnimationController _spinController = AnimationController(vsync: this, duration: const Duration(milliseconds: 700),);
   final HomeController controller = Get.put(HomeController());
 
   @override
@@ -29,7 +30,23 @@ class _HomeScreenState extends State<HomeScreen> {
     controller.fetchNotes();
     controller.loadUserData();
     controller.attachScrollListener();
+
+    ever(controller.isLoadingNotes, (bool loading) {
+      if (loading) {
+        _spinController.repeat();
+      } else {
+        _spinController.stop();
+        _spinController.reset();
+      }
+    });
   }
+
+  @override
+  void dispose() {
+    _spinController.dispose();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -47,14 +64,28 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: AppColors.gray0,
       centerTitle: true,
       elevation: 0,
-      title: const Text(
+      title: const AppText(
         'My Notes',
-        style: TextStyle(
-          fontWeight: FontWeight.w700,
-          fontSize: 18,
-          color: Color(0xFF1A1A2E),
-        ),
+        fontWeight: FontWeight.w700,
+        fontSize: 18,
+        color: Color(0xFF1A1A2E),
       ),
+      actions: [
+         Obx(() => IosTapEffect(
+          onTap: ()async {
+            await controller.fetchNotes();
+          },
+          child: AnimatedRotation(
+            turns: controller.isLoadingNotes.value ? 1 : 0,
+            duration: const Duration(milliseconds: 600),
+            child: RotationTransition(
+              turns: _spinController,
+              child: const Icon(Icons.refresh, color: Colors.black),
+            ),
+          ),
+        )),
+         const SizedBox(width: AppSpacing.s16,)
+      ],
     );
   }
 }
@@ -108,13 +139,12 @@ class _NoteListBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      // Initial loading
       if (controller.isLoadingNotes.value) {
         return ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          itemCount: 6,
-          itemBuilder: (_, __) => const NoteCardShimmer(),
-        );;
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            itemCount: 6,
+            itemBuilder: (_, __) => const NoteCardShimmer(),
+        );
       }
       // Empty state
       if (controller.notesList.isEmpty) {
@@ -167,12 +197,14 @@ class NoteList extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         itemCount: itemCount,
         itemBuilder: (context, index) {
-          //----->  Pagination
+          //-----  Pagination
           if (index == controller.notesList.length) {
-            return const Padding(
-              padding: EdgeInsets.symmetric(vertical: 16),
-              child: Center(child: CupertinoActivityIndicator()),
-            );
+            return Obx(() => controller.isLoadingMoreNotes.value
+                ? ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              itemCount: 1,
+              itemBuilder: (_, __) => const NoteCardShimmer(),
+            ): const SizedBox.shrink());
           }
 
           final note = controller.notesList[index] as NoteModel;

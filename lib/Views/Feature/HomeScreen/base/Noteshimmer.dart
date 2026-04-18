@@ -97,19 +97,19 @@ class NoteCardShimmer extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey.withValues(alpha: 0.12)),
       ),
-      child: Row(
+      child: const Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const CustomShimmer(
-            width: 20,
-            height: 20,
-            borderRadius: BorderRadius.all(Radius.circular(6)),
+           CustomShimmer(
+            width: 22,
+            height: 22,
+            borderRadius: BorderRadius.all(Radius.circular(4)),
           ),
-          const SizedBox(width: 12),
+          SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
+              children: [
                 CustomShimmer(
                   width: double.infinity,
                   height: 14,
@@ -130,14 +130,14 @@ class NoteCardShimmer extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(width: 12),
-          const CustomShimmer(
+           SizedBox(width: 12),
+           CustomShimmer(
             width: 20,
             height: 20,
             borderRadius: BorderRadius.all(Radius.circular(6)),
           ),
-          const SizedBox(width: 8),
-          const CustomShimmer(
+           SizedBox(width: 8),
+           CustomShimmer(
             width: 20,
             height: 20,
             borderRadius: BorderRadius.all(Radius.circular(6)),
