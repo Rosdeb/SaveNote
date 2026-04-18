@@ -157,20 +157,19 @@ class _NoteListBody extends StatelessWidget {
                 size: 56,
                 color: Colors.grey.shade300,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(width: AppSpacing.s16,),
               AppText(
                 'No notes yet',
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.grey.shade400,
-                ),
+                 fontSize: 16,
+                 fontWeight: FontWeight.w600,
+                 color: Colors.grey.shade400,
+
               ),
               const SizedBox(height: 6),
               AppText(
                 'Tap + to create your first note',
-                style: TextStyle(fontSize: 13, color: Colors.grey.shade400),
-              ),
+                fontSize: 13,
+                color: Colors.grey.shade400),
             ],
           ),
         );
@@ -206,7 +205,6 @@ class NoteList extends StatelessWidget {
               itemBuilder: (_, __) => const NoteCardShimmer(),
             ): const SizedBox.shrink());
           }
-
           final note = controller.notesList[index] as NoteModel;
           return NoteCard(
             note: note,
