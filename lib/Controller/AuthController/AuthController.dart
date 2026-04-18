@@ -43,7 +43,10 @@ class Authcontroller extends GetxController {
     final url = '${AppConstants.BASE_URL}/auth/login';
 
     if (!accepted.value) {
-      FloatingErrorBar.show(context, message: 'You must accept the terms & conditions ⚠️',);
+      FloatingErrorBar.show(
+        context,
+        message: 'You must accept the terms & conditions ⚠️',
+      );
       return;
     }
     try {
@@ -63,12 +66,24 @@ class Authcontroller extends GetxController {
         final tokens = data['response']['tokens'];
         final accessToken = tokens['access']['token'];
         final refreshToken = tokens['refresh']['token'];
-        //final name = data['name']
+
         await TokenService().saveToken(accessToken);
         await TokenService().saveRefreshToken(refreshToken);
+        await TokenService().saveUserId('${user['id'] ?? user['_id'] ?? ''}');
+        await TokenService().saveEmail('${user['email'] ?? name ?? ''}');
+        await TokenService().saveName(
+          '${user['name'] ?? user['username'] ?? user['fullName'] ?? ''}',
+        );
+        await TokenService().saveAvatar(
+          '${user['avatar'] ?? user['image'] ?? user['profileImage'] ?? ''}',
+        );
+
         AppLogger.log('Login success');
         AppLogger.log('Token: $accessToken');
-        FloatingSuccessBar.show(context, message: 'Login successful! Welcome back 👋',);
+        FloatingSuccessBar.show(
+          context,
+          message: 'Login successful! Welcome back 👋',
+        );
 
         if (context.mounted) {
           context.goNamed(AppRouteName.home);
@@ -92,10 +107,10 @@ class Authcontroller extends GetxController {
     }
   }
 
-
   //---------> signupdate screen create <-----------//
   final TextEditingController registernameController = TextEditingController();
-  final TextEditingController registerpasswordController = TextEditingController();
+  final TextEditingController registerpasswordController =
+      TextEditingController();
   final TextEditingController registeremailController = TextEditingController();
 
   Future<void> registerUser({
@@ -113,7 +128,10 @@ class Authcontroller extends GetxController {
     final url = '${AppConstants.BASE_URL}/auth/login';
 
     if (!accepted.value) {
-      FloatingErrorBar.show(context, message: 'You must accept the terms & conditions ⚠️',);
+      FloatingErrorBar.show(
+        context,
+        message: 'You must accept the terms & conditions ⚠️',
+      );
       return;
     }
     try {
@@ -123,9 +141,8 @@ class Authcontroller extends GetxController {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({
           'username': name,
-          'email':email,
+          'email': email,
           'password': password,
-
         }),
       );
 
@@ -138,7 +155,10 @@ class Authcontroller extends GetxController {
         await TokenService().saveToken(token);
         AppLogger.log('Login success');
         AppLogger.log('Token: $token');
-        FloatingSuccessBar.show(context, message: 'Login successful! Welcome back 👋',);
+        FloatingSuccessBar.show(
+          context,
+          message: 'Login successful! Welcome back 👋',
+        );
 
         if (context.mounted) {
           //Get.offAll(BottomMenuWrappers(), transition: Transition.cupertino);
@@ -161,8 +181,4 @@ class Authcontroller extends GetxController {
       isLoading.value = false;
     }
   }
-
-
 }
-
-

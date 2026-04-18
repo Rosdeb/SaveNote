@@ -6,6 +6,8 @@ import 'package:notesave/Views/Feature/Auth/Registration/RegistrationScreen.dart
 import 'package:notesave/Views/Feature/ErrorPage/errorpage.dart';
 import 'package:notesave/Views/Feature/SplashScreen/splash_screen.dart';
 
+import '../Views/Feature/HomeScreen/HomeScreen.dart';
+
 // lib/Router/app_router.dart
 
 class MyAppRouter {
@@ -21,6 +23,13 @@ class MyAppRouter {
         pageBuilder: (context, state) =>
             MaterialPage(child: SplashScreen()),
       ),
+      GoRoute(
+        path: AppPath.home,
+        name: AppRouteName.home,
+        pageBuilder: (context, state) =>
+            MaterialPage(child: Homescreen()),
+      ),
+
       GoRoute(
         path: AppPath.login,
         name: AppRouteName.login,
