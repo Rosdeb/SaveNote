@@ -25,7 +25,7 @@ class EditNoteScreen extends StatefulWidget {
 class _EditNoteScreenState extends State<EditNoteScreen> {
   late final TextEditingController titleController;
   late final TextEditingController descriptionController;
-  final Homecontroller controller = Get.find<Homecontroller>();
+  final HomeController controller = Get.find<HomeController>();
 
   @override
   void initState() {
@@ -98,7 +98,7 @@ class _EditNoteScreenState extends State<EditNoteScreen> {
 
             Obx(() => GradientButton(
               text: "Update Note",
-              isLoading: controller.isLogginNoteCreate.value,
+              isLoading: controller.isSavingNote.value,
               onTap: _updateNote,
               height: isTablet ? 65 : 52,
             )),

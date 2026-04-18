@@ -19,7 +19,7 @@ class CreateNoteScreen extends StatefulWidget {
 class _CreateNoteScreenState extends State<CreateNoteScreen> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
-  final Homecontroller controller = Get.find<Homecontroller>();
+  final HomeController controller = Get.find<HomeController>();
 
   @override
   void dispose() {
@@ -35,7 +35,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
       FloatingErrorBar.show(context, message: "Please enter title and description",);
       return;
     }
-    controller.noteCreate(context: context,title: title,description: description);
+    controller.createNote(context,title: title,description: description);
   }
 
   @override
@@ -81,7 +81,7 @@ class _CreateNoteScreenState extends State<CreateNoteScreen> {
             /// Save Button (Reusable Gradient Button)
             Obx(()=>GradientButton(
               text: "Save Note",
-              isLoading: controller.isLogginNoteCreate.value,
+              isLoading: controller.isSavingNote.value,
               onTap: _saveNote,
               height: isTablet ? 65 : 52,
             ),),

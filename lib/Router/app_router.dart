@@ -32,7 +32,7 @@ class MyAppRouter {
         path: AppPath.home,
         name: AppRouteName.home,
         pageBuilder: (context, state) =>
-            MaterialPage(child: Homescreen()),
+            MaterialPage(child: HomeScreen()),
       ),
 
       GoRoute(

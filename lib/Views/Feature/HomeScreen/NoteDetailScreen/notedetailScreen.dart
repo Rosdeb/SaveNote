@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:notesave/Views/Base/AppText/appText.dart';
+import 'package:notesave/utils/AppColor/app_colors.dart';
 
 class NoteDetailsScreen extends StatelessWidget {
   final String id;
@@ -16,7 +17,9 @@ class NoteDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.gray0,
       appBar: AppBar(
+        backgroundColor: AppColors.gray0,
         title: const Text("Note Details"),
         centerTitle: true,
       ),
@@ -33,7 +36,6 @@ class NoteDetailsScreen extends StatelessWidget {
               ),
 
             const SizedBox(height: 12),
-
 
             AppText(
               description,
