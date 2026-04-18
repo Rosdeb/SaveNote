@@ -123,8 +123,9 @@ class AddNoteFab extends StatelessWidget {
     return FloatingActionButton(
       backgroundColor: AppColors.gray0,
       shape: const CircleBorder(),
+      elevation: 3.5,
       onPressed: () => context.pushNamed(AppRouteName.createnoteScreen),
-      child: const Icon(Icons.add, color: AppColors.blue500),
+      child: const Icon(Icons.add, color: AppColors.blue500,size: 28,),
     );
   }
 }
