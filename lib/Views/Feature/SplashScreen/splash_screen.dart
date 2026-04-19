@@ -1,5 +1,6 @@
   import 'package:flutter/material.dart';
   import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
   import 'package:get/get.dart';
   import 'package:get/get_core/src/get_main.dart';
   import 'package:get/get_instance/src/extension_instance.dart';
@@ -7,6 +8,7 @@
   import 'package:notesave/Utils/AppSpacing/app_spacing.dart';
   import 'package:notesave/Utils/Typography/app_typography.dart';
   import 'package:notesave/Views/Base/AppText/appText.dart';
+import 'package:notesave/utils/AppColor/app_colors.dart';
   import '../../../Controller/SplashController/splashController.dart';
   import '../../../Router/route_names.dart';
   import '../../Base/GridentButton/Appbutton.dart';
@@ -51,50 +53,46 @@
       final isTablet = size.width > 600;
 
       return Scaffold(
-        backgroundColor: Theme.of(context).colorScheme.surface,
+        backgroundColor: Color(0xFFD8D8D8),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 40),
           child: SafeArea(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                //------ header image
-                Image.asset("assets/images/note_save.png",),
-                const SizedBox(height: AppSpacing.s16),
-                const AppText("Welcome to Note Save",style: AppTypography.headlineH2, fontSize: 15,textAlign: TextAlign.center,),
-                const SizedBox(height: AppSpacing.s16),
-                const AppText("Capture ideas, write freely,\nand never lose a thought again.", fontSize: 16,textAlign: TextAlign.center,),
 
+                const SizedBox(height: AppSpacing.s36),
+                Center(
+                  child: Image.asset(
+                    "assets/icons/Subtract.png",
+                    height: 240,
+                  ),
+                ),
                 const Spacer(),
-
-                //------ buton
-                GradientButton(
+                Obx(() => controller.isLoading.value
+                    ? const SizedBox.shrink()
+                    : GradientButton(
                   text: "Get started",
-                  //isLoading: controller.isLoading.value,
-                  height: isTablet ? 65 :52,
+                  colors: [Color(0xFFADA7A7), Color(0xFFD8D8D8)],
+                  height: isTablet ? 65 : 52,
                   onTap: () async {
                     HapticFeedback.lightImpact();
                     context.goNamed(AppRouteName.register);
                   },
-                ),
-
+                ),),
                 const SizedBox(height: AppSpacing.s16),
-
-                Row(
+                Obx(() => controller.isLoading.value
+                    ? const SizedBox.shrink()
+                    : Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const AppText(
-                      'Already have an account? ',
-                      style: AppTypography.bodySmall
-                    ),
+                    const AppText('Already have an account? ', style: AppTypography.bodySmall),
                     GestureDetector(
                       onTap: () => context.goNamed(AppRouteName.login),
-                      child: const AppText(
-                        'Sign in',
-                        style: AppTypography.displaySmall
-                      ),
+                      child: const AppText('Sign in', style: AppTypography.displaySmall),
                     ),
                   ],
-                ),
+                ),),
 
               ],
             ),
